@@ -26,10 +26,10 @@
         .answers {
             -webkit-transform: rotate(180deg);
             transform: rotate(180deg);
-            margin-top: 60px;
+            margin-top: 28px;
         }
         .question-cell {
-            padding-top: 60px;
+            padding-top: 48px;
         }
         .question-cell > div {
             display: flex;
@@ -38,20 +38,23 @@
             padding-right: 12px;
             font-size: 8px;
         }
+        .hide-answers {
+            margin-left: -2000px;
+        }
     </style>
     <body>
         <table class="questions">
             <tbody id="root"/>
         </table>
-        <table class="answers">
-            <tbody id="root-answers"/>
+        <table class="answers" id="root-answers">
+            <tbody/>
         </table>
 
-        <table class="questions" style="margin-top: 80px">
+        <table class="questions" style="margin-top: 40px">
             <tbody id="root-2"/>
         </table>
-        <table class="answers">
-            <tbody id="root-answers-2"/>
+        <table class="answers" id="root-answers-2">
+            <tbody/>
         </table>
     </body>
 </html>
@@ -137,32 +140,37 @@ function appendQuestions (tbody, questions) {
 }
 
 function appendAnswers (tbody, questions) {
-    if (getParameterByName('answers')) {
-        var currentI = 1;
-        var currentTR;
-        for (var i = 0; i < questions.length; i++) {
-            if (!currentTR || currentI++ >= ROWS) {
-                currentI = 1;
-                currentTR = document.createElement('tr');
-                tbody.appendChild(currentTR);
-            }
-            var td = document.createElement('td');
-            td.className = 'answer-cell';
-            td.innerText = questions[i].left * questions[i].right;
-            currentTR.appendChild(td);
+    var currentI = 1;
+    var currentTR;
+    for (var i = 0; i < questions.length; i++) {
+        if (!currentTR || currentI++ >= ROWS) {
+            currentI = 1;
+            currentTR = document.createElement('tr');
+            tbody.appendChild(currentTR);
         }
+        var td = document.createElement('td');
+        td.className = 'answer-cell';
+        td.innerText = questions[i].left * questions[i].right;
+        currentTR.appendChild(td);
     }
 }
 
+var showAnswers = getParameterByName('answers');
 var questions = generateQuestions();
 var tbody = document.getElementById('root');
 appendQuestions(tbody, questions);
 var answers = document.getElementById('root-answers');
-appendAnswers(answers, questions);
+if (!showAnswers) {
+    answers.className = 'hide-answers';
+}
+appendAnswers(answers.childNodes[answers.childNodes.length - 1], questions);
 
 questions = generateQuestions();
 tbody = document.getElementById('root-2');
 appendQuestions(tbody, questions);
 answers = document.getElementById('root-answers-2');
-appendAnswers(answers, questions);
+if (!showAnswers) {
+    answers.className = 'hide-answers';
+}
+appendAnswers(answers.childNodes[answers.childNodes.length - 1], questions);
 </script>

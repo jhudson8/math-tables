@@ -1,7 +1,7 @@
 <html>
     <style>
         body {
-            font-size: 20px;
+            font-size: 10px;
             font-family: arial;
         }
         .questions {
@@ -9,29 +9,33 @@
         }
         .number-part {
             display: block;
-            padding-left: 8px;
-            padding-right: 8px;
-            font-size: 14px;
+            padding-left: 4px;
+            padding-right: 4px;
+            font-size: 10px;
         }
         .operator {
             display: block;
-            font-size: 14px;
+            font-size: 10px;
         }
         .answer {
             display: block;
             margin-left: 8px;
-            width: 60px;
+            width: 40px;
             border-bottom: solid 2px #323232;
             margin-right: 8px;
         }
 
+        .answers-wrapper {
+            height: 120px;
+        }
         .answers {
             -webkit-transform: rotate(180deg);
             transform: rotate(180deg);
-            margin-top: 28px;
+            position: relative;
+            top: 24px;
         }
         .question-cell {
-            padding-top: 48px;
+            padding-top: 40px;
         }
         .question-cell > div {
             display: flex;
@@ -42,28 +46,33 @@
         }
         .hide-answers {
             margin-left: -2000px;
+            min-height: 102px;
         }
     </style>
     <body>
         <table class="questions">
             <tbody id="root"/>
         </table>
-        <table class="answers" id="root-answers">
-            <tbody/>
-        </table>
+        <div class="answers-wrapper">
+            <table class="answers" id="root-answers">
+                <tbody/>
+            </table>
+        </div>
 
-        <table class="questions" style="margin-top: 40px">
+        <table class="questions" style="margin-top: 20px">
             <tbody id="root-2"/>
         </table>
-        <table class="answers" id="root-answers-2">
-            <tbody/>
-        </table>
+        <div class="answers-wrapper">
+            <table class="answers" id="root-answers-2">
+                <tbody/>
+            </table>
+        </div>
     </body>
 </html>
 
 <script>
 var COLUMNS = 5;
-var ROWS = 5;
+var ROWS = 6;
 var NUM_QUESTIONS = COLUMNS * ROWS;
 
 function getParameterByName (name) {

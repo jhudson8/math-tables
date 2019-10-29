@@ -88,176 +88,180 @@ function getParameterByName (name) {
 
 var maxValue = parseInt(getParameterByName('max') || '9', 10);
 var minValue = parseInt(getParameterByName('min') || '1', 10);
-var availableTypes = (getParameterByName('type') || '*').replace(' ', '+').replace(/[xX]/, '*').replace('/', '%').split('');
-var types = availableTypes.filter(function (value) {
-    return '-+%*'.indexOf(value) >= 0;
-});
-if (types.length === 0) {
-    typs.push('*');
-}
-var generators = {
-    '+': function (cache) {
-        while (true) {
-            var num1 = genInt(minValue, maxValue);
-            var num2 = genInt(minValue, maxValue);
-            var key = num1 + '+' + num2;
-            if (!cache[key]) {
-                cache[key] = true;
-                return {
-                    num1: num1,
-                    num2: num2,
-                    operator: '+',
-                    answer: num1 + num2
+if (maxValue - minValue - 5 < 0) {
+    document.body.innerText = 'max value ' + maxValue + ' must be at least 5 greater than min value ' + minValue;
+} else {
+    var availableTypes = (getParameterByName('type') || '*').replace(' ', '+').replace(/[xX]/, '*').replace('/', '%').split('');
+    var types = availableTypes.filter(function (value) {
+        return '-+%*'.indexOf(value) >= 0;
+    });
+    if (types.length === 0) {
+        typs.push('*');
+    }
+    var generators = {
+        '+': function (cache) {
+            while (true) {
+                var num1 = genInt(minValue, maxValue);
+                var num2 = genInt(minValue, maxValue);
+                var key = num1 + '+' + num2;
+                if (!cache[key]) {
+                    cache[key] = true;
+                    return {
+                        num1: num1,
+                        num2: num2,
+                        operator: '+',
+                        answer: num1 + num2
+                    }
                 }
             }
-        }
-    },
-    '*': function (cache) {
-        while (true) {
-            var num1 = genInt(minValue, maxValue);
-            var num2 = genInt(minValue, maxValue);
-            var key = num1 + '*' + num2;
-            if (!cache[key]) {
-                cache[key] = true;
-                return {
-                    num1: num1,
-                    num2: num2,
-                    operator: 'X',
-                    answer: num1 * num2
+        },
+        '*': function (cache) {
+            while (true) {
+                var num1 = genInt(minValue, maxValue);
+                var num2 = genInt(minValue, maxValue);
+                var key = num1 + '*' + num2;
+                if (!cache[key]) {
+                    cache[key] = true;
+                    return {
+                        num1: num1,
+                        num2: num2,
+                        operator: 'X',
+                        answer: num1 * num2
+                    }
                 }
             }
-        }
-    },
-    '-': function (cache) {
-        while (true) {
-            var num1 = genInt(minValue, maxValue);
-            var num2 = genInt(minValue, maxValue);
-            if (num1 < num2) {
-                var tmp = num1;
-                num1 = num2;
-                num2 = num1;
-            }
-            var key = num1 + '-' + num2;
-            if (!cache[key]) {
-                cache[key] = true;
-                return {
-                    num1: num1,
-                    num2: num2,
-                    operator: '-',
-                    answer: num1 - num2
+        },
+        '-': function (cache) {
+            while (true) {
+                var num1 = genInt(minValue, maxValue);
+                var num2 = genInt(minValue, maxValue);
+                if (num1 < num2) {
+                    var tmp = num1;
+                    num1 = num2;
+                    num2 = num1;
+                }
+                var key = num1 + '-' + num2;
+                if (!cache[key]) {
+                    cache[key] = true;
+                    return {
+                        num1: num1,
+                        num2: num2,
+                        operator: '-',
+                        answer: num1 - num2
+                    }
                 }
             }
-        }
-    },
-    '%': function (cache) {
-        while (true) {
-            var num1 = genInt(minValue, maxValue);
-            var num2 = genInt(minValue, maxValue);
-            var result = num1 * num2;
-            var key = result + '%' + num2;
-            if (!cache[key]) {
-                cache[key] = true;
-                return {
-                    num1: result,
-                    num2: num2,
-                    operator: '/',
-                    answer: num1
+        },
+        '%': function (cache) {
+            while (true) {
+                var num1 = genInt(minValue, maxValue);
+                var num2 = genInt(minValue, maxValue);
+                var result = num1 * num2;
+                var key = result + '%' + num2;
+                if (!cache[key]) {
+                    cache[key] = true;
+                    return {
+                        num1: result,
+                        num2: num2,
+                        operator: '/',
+                        answer: num1
+                    }
                 }
             }
         }
     }
-}
 
 
-function generateQuestions () {
-    var questionCache = {};
-    var rtn = [];
-    while (rtn.length < NUM_QUESTIONS) {
-        rtn.push(generateQuestion(questionCache));
-    }
-    return rtn;
-}
-
-function generateQuestion (questionCache) {
-    var rand = Math.random();
-    var index = Math.floor(rand * types.length);
-    var type = types[index];
-    var generator = generators[type];
-    return generator(questionCache);
-}
-
-function genInt (minValue, maxValue) {
-    var num;
-    while (!num || num <= minValue || num >= maxValue) {
-        num = Math.floor(Math.random() * maxValue - minValue) + minValue;
-    }
-    return num;
-}
-
-function createCell (question) {
-    var td = document.createElement('td');
-    td.className = 'question-cell';
-    var container = document.createElement('div');
-    td.appendChild(container);
-    container.innerHTML = formatQuestion(question);
-    return td;
-}
-
-function formatQuestion (question) {
-    return '<span class="number-part">' +
-        question.num1 +
-        '</span><span class="operator">'  + question.operator + '</span><span class="number-part">' +
-        question.num2 +
-        '</span>' +
-        '<span class="equals">=</span>' +
-        '<span class="answer"></span>';
-}
-
-function appendQuestions (tbody, questions) {
-    var currentI = 1;
-    var currentTR;
-    for (var i = 0; i < questions.length; i++) {
-        if (!currentTR || currentI++ >= ROWS) {
-            currentI = 1;
-            currentTR = document.createElement('tr');
-            tbody.appendChild(currentTR);
+    function generateQuestions () {
+        var questionCache = {};
+        var rtn = [];
+        while (rtn.length < NUM_QUESTIONS) {
+            rtn.push(generateQuestion(questionCache));
         }
-        currentTR.appendChild(createCell(questions[i]));
+        return rtn;
     }
-}
 
-function appendAnswers (tbody, questions) {
-    var currentI = 1;
-    var currentTR;
-    for (var i = 0; i < questions.length; i++) {
-        if (!currentTR || currentI++ >= ROWS) {
-            currentI = 1;
-            currentTR = document.createElement('tr');
-            tbody.appendChild(currentTR);
+    function generateQuestion (questionCache) {
+        var rand = Math.random();
+        var index = Math.floor(rand * types.length);
+        var type = types[index];
+        var generator = generators[type];
+        return generator(questionCache);
+    }
+
+    function genInt (minValue, maxValue) {
+        var num;
+        while (!num || num <= minValue || num >= maxValue) {
+            num = Math.floor(Math.random() * maxValue - minValue) + minValue;
         }
+        return num;
+    }
+
+    function createCell (question) {
         var td = document.createElement('td');
-        td.className = 'answer-cell';
-        td.innerText = questions[i].answer;
-        currentTR.appendChild(td);
+        td.className = 'question-cell';
+        var container = document.createElement('div');
+        td.appendChild(container);
+        container.innerHTML = formatQuestion(question);
+        return td;
     }
-}
 
-var showAnswers = getParameterByName('answers');
-var questions = generateQuestions();
-var tbody = document.getElementById('root');
-appendQuestions(tbody, questions);
-var answers = document.getElementById('root-answers');
-if (!showAnswers) {
-    answers.className = 'hide-answers';
-}
-appendAnswers(answers.childNodes[answers.childNodes.length - 1], questions);
+    function formatQuestion (question) {
+        return '<span class="number-part">' +
+            question.num1 +
+            '</span><span class="operator">'  + question.operator + '</span><span class="number-part">' +
+            question.num2 +
+            '</span>' +
+            '<span class="equals">=</span>' +
+            '<span class="answer"></span>';
+    }
 
-questions = generateQuestions();
-tbody = document.getElementById('root-2');
-appendQuestions(tbody, questions);
-answers = document.getElementById('root-answers-2');
-if (!showAnswers) {
-    answers.className = 'hide-answers';
+    function appendQuestions (tbody, questions) {
+        var currentI = 1;
+        var currentTR;
+        for (var i = 0; i < questions.length; i++) {
+            if (!currentTR || currentI++ >= ROWS) {
+                currentI = 1;
+                currentTR = document.createElement('tr');
+                tbody.appendChild(currentTR);
+            }
+            currentTR.appendChild(createCell(questions[i]));
+        }
+    }
+
+    function appendAnswers (tbody, questions) {
+        var currentI = 1;
+        var currentTR;
+        for (var i = 0; i < questions.length; i++) {
+            if (!currentTR || currentI++ >= ROWS) {
+                currentI = 1;
+                currentTR = document.createElement('tr');
+                tbody.appendChild(currentTR);
+            }
+            var td = document.createElement('td');
+            td.className = 'answer-cell';
+            td.innerText = questions[i].answer;
+            currentTR.appendChild(td);
+        }
+    }
+
+    var showAnswers = getParameterByName('answers');
+    var questions = generateQuestions();
+    var tbody = document.getElementById('root');
+    appendQuestions(tbody, questions);
+    var answers = document.getElementById('root-answers');
+    if (!showAnswers) {
+        answers.className = 'hide-answers';
+    }
+    appendAnswers(answers.childNodes[answers.childNodes.length - 1], questions);
+
+    questions = generateQuestions();
+    tbody = document.getElementById('root-2');
+    appendQuestions(tbody, questions);
+    answers = document.getElementById('root-answers-2');
+    if (!showAnswers) {
+        answers.className = 'hide-answers';
+    }
+    appendAnswers(answers.childNodes[answers.childNodes.length - 1], questions);
 }
-appendAnswers(answers.childNodes[answers.childNodes.length - 1], questions);
 </script>

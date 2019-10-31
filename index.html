@@ -190,6 +190,7 @@ if (maxValue - minValue - 5 < 0) {
         while (rtn.num1 === 0 || rtn.num2 === 0 || rtn.answer === 0) {
             rtn = generator(questionCache);
         }
+        return rtn;
     }
 
     function genInt (minValue, maxValue) {

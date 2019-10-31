@@ -186,7 +186,10 @@ if (maxValue - minValue - 5 < 0) {
         var index = Math.floor(rand * types.length);
         var type = types[index];
         var generator = generators[type];
-        return generator(questionCache);
+        var rtn = generator(questionCache);
+        while (rtn.num1 === 0 || rtn.num2 === 0 || rtn.answer === 0) {
+            rtn = generator(questionCache);
+        }
     }
 
     function genInt (minValue, maxValue) {
